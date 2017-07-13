@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.school_app.mapper.StudentMapper">
+
+   <resultMap type="com.demo.school_app.entiy.Student" id="stuMap">
+      <id column="id" property="id"/>
+      <result column="student_no" property="studentNo"/>
+      <result column="student_name" property="studentName"/> 
+      <result column="classes_id" property="classesId"/> 
+      <result column="create_time" property="createTime"/>
+   </resultMap>
+   
+   <resultMap type="com.demo.school_app.vo.StuVo" id="stuVoMap">
+      <id column="id" property="id"/>
+      <result column="student_no" property="studentNo"/>
+      <result column="student_name" property="studentName"/> 
+      <result column="classes_id" property="classesId"/> 
+      <result column="create_time" property="createTime"/>
+      <result column="class_name" property="className"/>
+      <result column="master_name" property="masterName"/>
+      <result column="gradge" property="gradge"/>
+   </resultMap>
+
+   <select id="getStudentList" resultMap="stuVoMap" parameterType="map">
+      SELECT t.id, t.classes_id, t.student_name, t.student_no, t.create_time, a.class_name, a.master_name, a.gradge
+	  FROM student AS t LEFT JOIN classes a on a.id = t.classes_id
+      where 1=1
+      <if test="studentName !=null and studentName !=''">
+         AND t.student_name like concat('%', #{studentName}, '%')
+      </if>
+      order by t.create_time desc
+      limit #{page.current}, #{page.size}
+   </select>
+   
+   <select id="getStudentNum" resultType="int" parameterType="map">
+      SELECT count(1) FROM student AS t LEFT JOIN classes a on a.id = t.classes_id where 1=1
+      <if test="studentName !=null and studentName !=''">
+         AND t.student_name like concat('%', #{studentName}, '%')
+      </if>
+   </select> 
+   
+   <delete id="deleteStudentById" parameterType="string">
+      delete from student where id = #{0}
+   </delete>
+   
+   <insert id="addStudent" parameterType="com.demo.school_app.entiy.Student" keyProperty="id" useGeneratedKeys="true">
+      insert into student(classes_id, student_name, student_no, create_time)
+      values(#{classesId}, #{studentName}, #{studentNo},NOW())
+   </insert>
+</mapper>

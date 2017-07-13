@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.school_app.mapper.ClassesMapper">
+
+   <resultMap type="com.demo.school_app.entiy.Classes" id="classMap">
+      <id column="id" property="id"/>
+      <result column="class_no" property="classNo"/>
+      <result column="class_name" property="className"/>
+      <result column="master_name" property="masterName"/>
+      <result column="message" property="message"/>
+      <result column="gradge" property="gradge"/>
+      <result column="create_time" property="createTime"/>
+   </resultMap>
+
+   <select id="getClassesList" resultMap="classMap" parameterType="map">
+      SELECT t.id, t.class_no, t.class_name, t.master_name, t.message, t.gradge, t.create_time
+      FROM classes AS t
+      where 1=1
+      <if test="className !=null and className !=''">
+         AND t.class_name like concat('%', #{className}, '%')
+      </if>
+      order by t.create_time desc
+      limit #{page.current}, #{page.size}
+   </select>
+   
+   <select id="getClassesNum" resultType="int" parameterType="map">
+      SELECT count(1) FROM classes AS t where 1=1
+      <if test="className !=null and className !=''">
+         AND t.class_name like concat('%', #{className}, '%')
+      </if>
+   </select>
+   
+   <update id="updateClassById" parameterType="com.demo.school_app.entiy.Classes">
+      update classes set class_name = #{className},master_name =#{masterName},message=#{message},gradge=#{gradge} where id = #{id}
+   </update>
+   
+   <delete id="deleteClassById" parameterType="string">
+      delete from classes where id = #{0}
+   </delete>
+   
+   <insert id="insertClasses" parameterType="com.demo.school_app.entiy.Classes" keyProperty="id" useGeneratedKeys="true">
+      insert into classes(class_no, class_name, master_name, message, gradge, create_time)
+      values(#{classNo}, #{className}, #{masterName},#{message},#{gradge},NOW())
+   </insert>
+</mapper>
